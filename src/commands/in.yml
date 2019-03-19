@@ -1,0 +1,23 @@
+description: >
+  Max duration for the job in minutes
+
+parameters:
+  minutes:
+    type: integer
+    default: 60
+    description: >
+      Job max duration in minutes
+
+steps:
+  - run: 
+      name: Stop That Job Orb
+      command: |
+        if [[ $CIRCLE_BUILD_URL == *"https://circleci.com/gh"* ]]; then
+          export STOP_THAT_JOB_ORB_VCS=github
+        fi
+        if [[ $CIRCLE_BUILD_URL == *"https://circleci.com/bb"* ]]; then
+          export STOP_THAT_JOB_ORB_VCS=bitbucket
+        fi
+        export STOP_THAT_JOB_ORB_TIME=$((<< parameters.minutes >>*60))
+        sleep ${STOP_THAT_JOB_ORB_TIME} && curl -X POST https://circleci.com/api/v1.1/project/${STOP_THAT_JOB_ORB_VCS}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/cancel?circle-token=${STOP_THAT_JOB_ORB_TOKEN}
+      background: true

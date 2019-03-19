@@ -1,0 +1,22 @@
+description: >
+  Stop the job if it runs longer than 20 minutes. Always run stop that job as the first step
+
+usage:
+  version: 2.1
+
+  orbs:
+    stopthatjob: fernfernfern/stopthatjob@1.0.0
+
+  executors:
+    python:
+      docker:
+        - image: circleci/python
+
+  jobs:
+    build:
+      executor: python
+      steps:
+        - stopthatjob/in:
+            minutes: 20
+        - checkout
+
